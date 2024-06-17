@@ -1,6 +1,6 @@
 import re # Imports regex.
 
-contacts = {"123-456-7890": {"Name": "John Smith", "Email": "johnsmith@gmail.com"}}
+contacts = {"1234567890": {"Name": "John Smith", "Email": "johnsmith@gmail.com"}} # Our dictionary containing our contacts.
 
 def main():
     while True:
@@ -35,13 +35,15 @@ def add_new_contact():
     while True:
         try:
             number = input("What is your new contact's phone number? ")
-            new_contact_number = re.search(r"\(?\d{3}(\s|-|\))?\d{3}(\s|-)?\d{4}", number)
+            new_contact_number = re.search(r"\(?\d{3}\)?(\s|-)?\d{3}(\s|-)?\d{4}", number) # Using regex to confirm the user is entering the correct input for a phone number (contains 10 digits, the first 3 digits may or may not be surrounded by parenthesis, and there may or may not be dashes between the first 3 digits and the second 3 digits). The re.search() method is used to search for any matches in the user input to the metacharacters used inside our raw string.
+            number = new_contact_number.group().replace('(', '').replace('-', '').replace(')', '').replace(' ', '') # using .replace() to take whatever format the user enters the phone number and converts it to our universal format that we've created (1234567890). The number is assigned to the variable using the .group() method so it appears readable.
+            print(number)
             new_contact_name = input("What is your new contact's name? ")
             email = input("What is your new contact's email address? ")
-            new_contact_email = re.search(r"[\w.-]+@[\w-]+.[a-z]{2,3}", email)
-            new_contact.update({new_contact_number.group(): {"Name": new_contact_name, "Email": new_contact_email.group()}}) # Updates new_contact with the new number including the .group() method so it appears readable. It also adds the new name and new email address (using .group()) to their indicated keys in our contacts dicitonary.
-            contacts.update(new_contact)
-            print(f"Congratulations! Your new contact {new_contact_number.group()} {new_contact_name} {new_contact_email.group()} has been added successfully!")
+            new_contact_email = re.search(r"[\w.-]+@[\w-]+.[a-z]{2,3}", email) # Checks to make sure the user enters the email in the proper format (includes a username, an @ symbol and ends with .com, .org, etc.)
+            new_contact.update({number: {"Name": new_contact_name, "Email": new_contact_email.group()}}) # Updates new_contact with the new number. It also adds the new name and new email address (using .group()) to their indicated keys in our contacts dicitonary.
+            contacts.update(new_contact) # Updates our main dicitonary contacts with the new contact.
+            print(f"Congratulations! Your new contact {number} {new_contact_name} {new_contact_email.group()} has been added successfully!")
             break
         except:
             continue # Repeating the loop if the user enters an invalid input.
@@ -88,7 +90,7 @@ def delete_contact():
             return
         confirm = input("Are you sure you would like to delete this contact? ")
         if confirm == 'yes':
-            del contacts[delete]
+            del contacts[delete] # Using the del method to delete what is entered in the delete input from the contacts dictionary.
             print(f"Your contact {delete} has been deleted successfully.")
             break
         elif confirm == 'no':
@@ -101,9 +103,11 @@ def search_for_contact(): # need help with this
     while True:
         try:
             contact_search = input("Search for a phone number here ")
-            search_results = re.search(r"\(?\d{3}(\s|-|\))?\d{3}(\s|-)?\d{4}", contact_search)
+            search_results = re.match(r"\(?\d{3}\)?(\s|-)?\d{3}(\s|-)?\d{4}", contact_search) # Using regex to confirm the user is entering the correct input for a phone number (contains 10 digits, the first 3 digits may or may not be surrounded by parenthesis, and there may or may not be dashes between the first 3 digits and the second 3 digits). The re.match() method is used to confirm if there is match in our contacts dictionary for the user input.
+            search_results = search_results.group().replace('(', '').replace('-', '').replace(')', '').replace(' ', '') # using .replace() to take whatever format the user enters the phone number they are searching for and converts it to our universal format that we've created (1234567890). The .group() method is used on to convert the user input to a readable format.
+            print(search_results)
             if search_results in contacts:
-                print(contacts[contact_search])
+                print(contacts[search_results]) # Accessing our dicitonary to print out the phone number the user searches for if it is in there.
                 break
             else:
                 print("Contact not found")
